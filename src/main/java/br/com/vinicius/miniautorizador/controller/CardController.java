@@ -2,7 +2,10 @@ package br.com.vinicius.miniautorizador.controller;
 
 
 import br.com.vinicius.miniautorizador.controller.request.CardRequest;
+import br.com.vinicius.miniautorizador.controller.response.CardResponse;
+import br.com.vinicius.miniautorizador.exception.CardNotFoundException;
 import br.com.vinicius.miniautorizador.service.CardService;
+import br.com.vinicius.miniautorizador.util.enums.CardStatus;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,24 +31,14 @@ public class CardController {
     @PostMapping
     public ResponseEntity<CardRequest> createCreditCard(@Valid @RequestBody CardRequest cardRequest){
         logger.info("Criando cartão para número: {}", cardRequest.getCardNumber());
-        return Optional.of(cardRequest.getCardNumber())
-                .filter(number -> !cardService.existsByCardNumber(number))
-                .map(number -> {
-                    CardRequest created = cardService.createCreditCard(cardRequest);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201
-                })
-                .orElseGet(() -> {
-                    logger.warn("Cartão já existe: {}", cardRequest.getCardNumber());
-                    return ResponseEntity.unprocessableEntity().body(cardRequest); // 422
-                });
+        return ResponseEntity.ok(cardService.createCreditCard(cardRequest));
     }
 
     @GetMapping(value = "/{numeroCartao}")
-    public BigDecimal getCardBalance(@PathVariable String numeroCartao) {
+    public ResponseEntity<BigDecimal> getCardBalance(@PathVariable String numeroCartao) {
 
         logger.info("Consultando o numero do cartao: {}", numeroCartao);
-        return cardService.getBalance(numeroCartao);
+        return ResponseEntity.ok(cardService.getBalance(numeroCartao));
+
     }
-
-
 }

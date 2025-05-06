@@ -19,10 +19,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
-                .csrf(csrf -> csrf.disable()); // opcionalmente desativar CSRF para API
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

@@ -1,13 +1,16 @@
 package br.com.vinicius.miniautorizador.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "card")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Card {
 
     @Id
@@ -17,7 +20,7 @@ public class Card {
     @Column(nullable = false)
     private String cardNumber;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String password;
 
     @Column

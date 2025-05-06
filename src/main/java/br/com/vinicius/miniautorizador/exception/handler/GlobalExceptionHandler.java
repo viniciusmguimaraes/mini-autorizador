@@ -1,5 +1,6 @@
 package br.com.vinicius.miniautorizador.exception.handler;
 
+import br.com.vinicius.miniautorizador.exception.CardAlreadyExistException;
 import br.com.vinicius.miniautorizador.exception.CardNotFoundException;
 import br.com.vinicius.miniautorizador.exception.InsufficientBalanceException;
 import br.com.vinicius.miniautorizador.exception.InvalidPasswordException;
@@ -19,8 +20,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidPasswordException ex) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+        ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    @ExceptionHandler(CardAlreadyExistException.class)
+    public ResponseEntity<ErrorResponse> handleCardAlreadyExistException(CardAlreadyExistException ex) {
+        ErrorResponse error = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {

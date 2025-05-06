@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 
 public interface CardService {
 
-    boolean existsByCardNumber(String numeroCartao);
     CardRequest createCreditCard(CardRequest card);
     BigDecimal getBalance(String cardNumber);
 

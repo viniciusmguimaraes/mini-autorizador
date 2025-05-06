@@ -2,6 +2,7 @@ package br.com.vinicius.miniautorizador.controller;
 
 import br.com.vinicius.miniautorizador.controller.request.TransactionRequest;
 import br.com.vinicius.miniautorizador.service.TransactionService;
+import br.com.vinicius.miniautorizador.util.enums.CardStatus;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -26,13 +27,6 @@ public class TransactionController {
     public ResponseEntity<String> processTransaction(@Valid @RequestBody TransactionRequest transactionRequest) {
         logger.info("Iniciando transação para o cartão {}", transactionRequest.getCardNumber());
 
-        String resultado = transactionService.carryOutTransaction(transactionRequest);
-
-        return switch (resultado) {
-            case "OK" -> ResponseEntity.status(HttpStatus.CREATED).body("OK");
-            case "CARTAO_INEXISTENTE", "SENHA_INVALIDA", "SALDO_INSUFICIENTE" ->
-                    ResponseEntity.unprocessableEntity().body(resultado);
-            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERRO_INTERNO");
-        };
+        return ResponseEntity.ok(transactionService.carryOutTransaction(transactionRequest));
     }
 }

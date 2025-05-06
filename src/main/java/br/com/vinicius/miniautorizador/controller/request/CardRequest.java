@@ -1,11 +1,9 @@
 package br.com.vinicius.miniautorizador.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
-@Getter
-@NoArgsConstructor
+@Data
 public class CardRequest {
 
     @JsonProperty("numeroCartao")

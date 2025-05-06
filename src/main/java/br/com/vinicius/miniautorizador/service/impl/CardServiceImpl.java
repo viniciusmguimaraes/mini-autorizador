@@ -2,11 +2,17 @@ package br.com.vinicius.miniautorizador.service.impl;
 
 import br.com.vinicius.miniautorizador.controller.request.CardRequest;
 import br.com.vinicius.miniautorizador.domain.Card;
+import br.com.vinicius.miniautorizador.exception.CardAlreadyExistException;
+import br.com.vinicius.miniautorizador.exception.CardNotFoundException;
 import br.com.vinicius.miniautorizador.repository.CardRepository;
 import br.com.vinicius.miniautorizador.service.CardService;
+import br.com.vinicius.miniautorizador.util.enums.CardStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class CardServiceImpl implements CardService {
@@ -20,16 +26,16 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public boolean existsByCardNumber(String numeroCartao) {
-        return cardRepository.findByCardNumber(numeroCartao).isPresent();
-    }
-
-    @Override
     public CardRequest createCreditCard(CardRequest card) {
-        Card newCard = new Card();
-        newCard.setBalance(INITIAL_BALANCE);
-        newCard.setCardNumber(card.getCardNumber());
-        newCard.setPassword(card.getCardPassword());
+
+        //Valida se o CardNumber existe no banco de dados
+        Optional.of(card.getCardNumber())
+                .filter(this::existsByCardNumber)
+                .orElseThrow(() -> new CardAlreadyExistException(CardStatus.CARTAO_EXISTENTE.getMessage()));
+
+        Card newCard = Card.builder().balance(INITIAL_BALANCE)
+                .cardNumber(card.getCardNumber())
+                .password(card.getCardPassword()).build();
 
         cardRepository.save(newCard);
         return card;
@@ -39,7 +45,11 @@ public class CardServiceImpl implements CardService {
     public BigDecimal getBalance(String cardNumber) {
         return cardRepository.findByCardNumber(cardNumber)
                 .map(Card::getBalance)
-                .orElseThrow(() -> new RuntimeException("Cartão não encontrado"));
+                .orElseThrow(() -> new CardNotFoundException(CardStatus.CARTAO_INEXISTENTE.getMessage()));
+    }
+
+    private boolean existsByCardNumber(String numeroCartao) {
+        return cardRepository.findByCardNumber(numeroCartao).isPresent();
     }
 
 }
