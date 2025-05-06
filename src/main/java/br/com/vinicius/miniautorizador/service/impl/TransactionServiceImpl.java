@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
                         cardRepository.save(card);
 
                         logger.info("Transação realizada com sucesso para o cartão: {}", request.getCardNumber());
-                        return CardStatus.OK.name();
+                        return CardStatus.OK.getMessage();
                 }).orElseThrow(() -> new CardNotFoundException(CardStatus.CARTAO_INEXISTENTE.getMessage()));
 
     }

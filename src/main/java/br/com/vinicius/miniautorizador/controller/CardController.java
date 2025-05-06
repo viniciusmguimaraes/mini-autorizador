@@ -2,21 +2,16 @@ package br.com.vinicius.miniautorizador.controller;
 
 
 import br.com.vinicius.miniautorizador.controller.request.CardRequest;
-import br.com.vinicius.miniautorizador.controller.response.CardResponse;
-import br.com.vinicius.miniautorizador.exception.CardNotFoundException;
 import br.com.vinicius.miniautorizador.service.CardService;
-import br.com.vinicius.miniautorizador.util.enums.CardStatus;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Slf4j
 @RestController

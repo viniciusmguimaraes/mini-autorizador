@@ -7,8 +7,6 @@ import br.com.vinicius.miniautorizador.exception.CardNotFoundException;
 import br.com.vinicius.miniautorizador.repository.CardRepository;
 import br.com.vinicius.miniautorizador.service.CardService;
 import br.com.vinicius.miniautorizador.util.enums.CardStatus;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,7 +29,9 @@ public class CardServiceImpl implements CardService {
         //Valida se o CardNumber existe no banco de dados
         Optional.of(card.getCardNumber())
                 .filter(this::existsByCardNumber)
-                .orElseThrow(() -> new CardAlreadyExistException(CardStatus.CARTAO_EXISTENTE.getMessage()));
+                .ifPresent(cardNumber -> {
+                    throw new CardAlreadyExistException(CardStatus.CARTAO_EXISTENTE.getMessage());
+                });
 
         Card newCard = Card.builder().balance(INITIAL_BALANCE)
                 .cardNumber(card.getCardNumber())
