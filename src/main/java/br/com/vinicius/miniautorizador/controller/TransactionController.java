@@ -1,7 +1,15 @@
 package br.com.vinicius.miniautorizador.controller;
 
+import br.com.vinicius.miniautorizador.controller.request.TransactionRequest;
+import br.com.vinicius.miniautorizador.service.TransactionService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,4 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RequestMapping("/transacoes")
 public class TransactionController {
+
+    private static final Logger logger = LogManager.getLogger(TransactionController.class);
+    private final TransactionService transactionService;
+
+
+    @PostMapping
+    public ResponseEntity<String> processTransaction(@Valid @RequestBody TransactionRequest transactionRequest) {
+        logger.info("Iniciando transação para o cartão {}", transactionRequest.getCardNumber());
+
+        String resultado = transactionService.carryOutTransaction(transactionRequest);
+
+        return switch (resultado) {
+            case "OK" -> ResponseEntity.status(HttpStatus.CREATED).body("OK");
+            case "CARTAO_INEXISTENTE", "SENHA_INVALIDA", "SALDO_INSUFICIENTE" ->
+                    ResponseEntity.unprocessableEntity().body(resultado);
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERRO_INTERNO");
+        };
+    }
 }
